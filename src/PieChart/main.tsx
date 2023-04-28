@@ -375,11 +375,10 @@ export const PieChartMain = (props: propTypes) => {
             // console.log('ax', ax);
             // console.log('ay', ay);
             return (
-              <>
+              <Container key={index}>
                 {/* <Line x1={mx} x2={cx} y1={my} y2={cy} stroke="black" /> */}
                 {showTextBackground && (
                   <Circle
-                    key={index + 'b'}
                     cx={x}
                     cy={y - (item.textSize || textSize) / 4}
                     r={
@@ -412,7 +411,6 @@ export const PieChartMain = (props: propTypes) => {
                   />
                 )}
                 <SvgText
-                  key={index + 'svgtxt'}
                   fill={item.textColor || textColor || colors[(index + 2) % 9]}
                   fontSize={item.textSize || textSize}
                   fontFamily={item.font || props.font}
@@ -447,7 +445,6 @@ export const PieChartMain = (props: propTypes) => {
                   {item.text || (showValuesAsLabels ? item.value + '' : '')}
                 </SvgText>
                 {showPercentage && <SvgText
-                  key={index + 'svgtxtpercentage'}
                   fill={item.textColor || textColor || colors[(index + 2) % 9]}
                   fontSize={item.textSize || textSize}
                   fontFamily={item.font || props.font}
@@ -481,7 +478,7 @@ export const PieChartMain = (props: propTypes) => {
                   }}>
                   {(item.value/totalCount*100).toFixed(2)}%
                 </SvgText>}
-              </>
+              </Container>
             );
           })}
       </Svg>
@@ -546,3 +543,14 @@ export const PieChartMain = (props: propTypes) => {
     </View>
   );
 };
+
+interface IContainer{
+  children: any
+}
+const Container = ({children}: IContainer) => {
+  return (
+    <>
+    {children}
+    </>
+  )
+}
