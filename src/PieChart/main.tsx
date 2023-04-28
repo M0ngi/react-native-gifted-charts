@@ -40,6 +40,7 @@ type propTypes = {
   textBackgroundColor?: string;
   textBackgroundRadius?: number;
   showValuesAsLabels?: Boolean;
+  showPercentage?: Boolean;
 
   centerLabelComponent?: Function;
   tiltAngle?: string;
@@ -81,7 +82,7 @@ type itemType = {
 export const PieChartMain = (props: propTypes) => {
   const {isThreeD} = props;
   const propData = props.data;
-  const data = [];
+  const data: itemType[] = [];
   if (propData) {
     for (let i = 0; i < propData.length; i++) {
       if (propData[i].value !== 0) {
@@ -134,6 +135,7 @@ export const PieChartMain = (props: propTypes) => {
   const showTextBackground = props.showTextBackground || false;
   const textBackgroundColor = props.textBackgroundColor || 'white';
   const showValuesAsLabels = props.showValuesAsLabels || false;
+  const showPercentage = props.showPercentage || false;
   const showGradient = props.showGradient || false;
   const gradientCenterColor = props.gradientCenterColor || 'white';
   const toggleFocusOnPress = props.toggleFocusOnPress === false ? false : true;
@@ -189,6 +191,8 @@ export const PieChartMain = (props: propTypes) => {
   });
   pData = [0, ...pData];
 
+  const totalCount = data.reduce((prev, curr)=> curr.value + prev, 0)
+
   return (
     <View
       style={[
@@ -218,7 +222,7 @@ export const PieChartMain = (props: propTypes) => {
           {data.map((item, index) => {
             return (
               <RadialGradient
-                key={index + ''}
+                key={index + 'svg'}
                 id={'grad' + index}
                 cx="50%"
                 cy="50%"
@@ -280,7 +284,7 @@ export const PieChartMain = (props: propTypes) => {
 
             return (
               <Path
-                key={index + 'a'}
+                key={index + 'abb'}
                 d={`M ${cx + (item.shiftX || 0)} ${
                   cy + (item.shiftY || 0)
                 } L ${sx} ${sy} A ${radius} ${radius} 0 ${
@@ -312,10 +316,10 @@ export const PieChartMain = (props: propTypes) => {
                   if (props.focusOnPress) {
                     if (props.selectedIndex === index) {
                       if (toggleFocusOnPress) {
-                        props.setSelectedIndex(-1);
+                        props.setSelectedIndex && props.setSelectedIndex(-1);
                       }
                     } else {
-                      props.setSelectedIndex(index);
+                      props.setSelectedIndex && props.setSelectedIndex(index);
                     }
                   }
                 }}
@@ -398,16 +402,17 @@ export const PieChartMain = (props: propTypes) => {
                       if (props.focusOnPress) {
                         if (props.selectedIndex === index) {
                           if (toggleFocusOnPress) {
-                            props.setSelectedIndex(-1);
+                            props.setSelectedIndex && props.setSelectedIndex(-1);
                           }
                         } else {
-                          props.setSelectedIndex(index);
+                          props.setSelectedIndex && props.setSelectedIndex(index);
                         }
                       }
                     }}
                   />
                 )}
                 <SvgText
+                  key={index + 'svgtxt'}
                   fill={item.textColor || textColor || colors[(index + 2) % 9]}
                   fontSize={item.textSize || textSize}
                   fontFamily={item.font || props.font}
@@ -432,15 +437,50 @@ export const PieChartMain = (props: propTypes) => {
                     if (props.focusOnPress) {
                       if (props.selectedIndex === index) {
                         if (toggleFocusOnPress) {
-                          props.setSelectedIndex(-1);
+                          props.setSelectedIndex && props.setSelectedIndex(-1);
                         }
                       } else {
-                        props.setSelectedIndex(index);
+                        props.setSelectedIndex && props.setSelectedIndex(index);
                       }
                     }
                   }}>
                   {item.text || (showValuesAsLabels ? item.value + '' : '')}
                 </SvgText>
+                {showPercentage && <SvgText
+                  key={index + 'svgtxtpercentage'}
+                  fill={item.textColor || textColor || colors[(index + 2) % 9]}
+                  fontSize={item.textSize || textSize}
+                  fontFamily={item.font || props.font}
+                  fontWeight={item.fontWeight || props.fontWeight}
+                  fontStyle={item.fontStyle || props.fontStyle || 'normal'}
+                  x={
+                    x +
+                    (item.shiftTextX || 0) -
+                    (item.textSize || textSize) / 1.8
+                  }
+                  y={y + 15 + (item.shiftTextY || 0)}
+                  onPress={() => {
+                    item.onLabelPress
+                      ? item.onLabelPress()
+                      : props.onLabelPress
+                      ? props.onLabelPress(item, index)
+                      : item.onPress
+                      ? item.onPress()
+                      : props.onPress
+                      ? props.onPress(item, index)
+                      : null;
+                    if (props.focusOnPress) {
+                      if (props.selectedIndex === index) {
+                        if (toggleFocusOnPress) {
+                          props.setSelectedIndex && props.setSelectedIndex(-1);
+                        }
+                      } else {
+                        props.setSelectedIndex && props.setSelectedIndex(index);
+                      }
+                    }
+                  }}>
+                  {(item.value/totalCount*100).toFixed(2)}%
+                </SvgText>}
               </>
             );
           })}

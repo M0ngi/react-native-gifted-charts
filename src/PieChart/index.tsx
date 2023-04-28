@@ -23,6 +23,8 @@ type propTypes = {
   data: Array<itemType>;
   semiCircle?: Boolean;
 
+  showPercentage?: boolean;
+
   showText?: Boolean;
   textColor?: string;
   textSize?: number;
@@ -116,10 +118,10 @@ export const PieChart = (props: propTypes) => {
                 value: props.data[selectedIndex].value,
                 color:
                   props.data[selectedIndex].color || colors[selectedIndex % 9],
-                strokeColor: props.data[selectedIndex].strokeColor || null,
-                strokeWidth: props.data[selectedIndex].strokeWidth || null,
+                strokeColor: props.data[selectedIndex].strokeColor || undefined,
+                strokeWidth: props.data[selectedIndex].strokeWidth || undefined,
                 gradientCenterColor:
-                  props.data[selectedIndex].gradientCenterColor || null,
+                  props.data[selectedIndex].gradientCenterColor || undefined,
               },
               {
                 value: total - props.data[selectedIndex].value,
